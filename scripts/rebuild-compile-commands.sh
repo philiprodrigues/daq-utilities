@@ -19,7 +19,7 @@ testrel="$1"
 
 pushd "$testrel"
 export CMAKE_PREFIX_PATH=$HOME/miniconda3/envs/emacs-ide/lib:$CMAKE_PREFIX_PATH
-CC="$HOME/miniconda3/envs/emacs-ide/bin/clang" CXX="$HOME/miniconda3/envs/emacs-ide/bin/clang++" cmake -S sourcecode -B clang-build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_MODULE_PATH="$DBT_ROOT/cmake" # -DCMAKE_TOOLCHAIN_FILE="$testrel/cross-linux.cmake"
+CC="$HOME/miniconda3/envs/emacs-ide/bin/clang" CXX="$HOME/miniconda3/envs/emacs-ide/bin/clang++" cmake -G Ninja -S sourcecode -B clang-build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_MODULE_PATH="$DBT_ROOT/cmake" # -DCMAKE_TOOLCHAIN_FILE="$testrel/cross-linux.cmake"
 cp clang-build/compile_commands.json "$testrel"
 
 # Sadly clang++ needs "-stdlib=libc++" added manually to the command
