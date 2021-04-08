@@ -21,6 +21,7 @@ pushd "$testrel"
 export CMAKE_PREFIX_PATH=$HOME/miniconda3/envs/emacs-ide/lib:$CMAKE_PREFIX_PATH
 CC="$HOME/miniconda3/envs/emacs-ide/bin/clang" CXX="$HOME/miniconda3/envs/emacs-ide/bin/clang++" cmake -S sourcecode -B clang-build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_MODULE_PATH="$DBT_ROOT/cmake" # -DCMAKE_TOOLCHAIN_FILE="$testrel/cross-linux.cmake"
 cp clang-build/compile_commands.json "$testrel"
+
 # Sadly clang++ needs "-stdlib=libc++" added manually to the command
 # line. Don't understand why cmake doesn't know to add it
 #
@@ -34,5 +35,18 @@ cp clang-build/compile_commands.json "$testrel"
 #
 # To work around it, we add -frelaxed-template-template-args
 sed -i -e 's,clang++,clang++ -frelaxed-template-template-args -stdlib=libc++,' "$testrel/compile_commands.json"
+
+# And another thing...
+#
+# The daq-cmake build relies on #including codegen items from the
+# build dir. For this clang build, we use our own clang-build
+# directory, so as not to stomp all over the real build directory. But
+# we never use this directory for an actual build, so there are no
+# codegen items in it. So we munge the -I/path/to/clang-build args to
+# point to /path/to/build instead
+clang_build_dir=${testrel}/clang-build
+build_dir=${testrel}/build
+sed -i -e "s,${clang_build_dir},${build_dir},g" "$testrel/compile_commands.json"
+
 popd
 
