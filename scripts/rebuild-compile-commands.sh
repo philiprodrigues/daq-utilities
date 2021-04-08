@@ -47,6 +47,10 @@ sed -i -e 's,clang++,clang++ -frelaxed-template-template-args -stdlib=libc++,' "
 clang_build_dir=${testrel}/clang-build
 build_dir=${testrel}/build
 sed -i -e "s,${clang_build_dir},${build_dir},g" "$testrel/compile_commands.json"
-
+#
+# Attempt #2 at the same thing: looks like we're getting include
+# directories in the compile_commands.json that are relative to the
+# build dir
+sed -i -e "s,-I\([^/][^[:space:]]\+\),-I${build_dir}/\1,g" "$testrel/compile_commands.json"
 popd
 
