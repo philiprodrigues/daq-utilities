@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -euo pipefail
+#set -euo pipefail
+
+# Usage:
+#
+# new-workdir.sh path/to/workdir dunedaq_version [package1 package2 ...]
 
 workdir="$1"; shift
 version="$1"; shift
@@ -18,16 +22,17 @@ if [[ -z "$CONDA_DEFAULT_ENV" ]]; then
 fi
 
 source /cvmfs/dunedaq.opensciencegrid.org/setup_dunedaq.sh
-echo setup_dbt
+echo Running setup_dbt "$dunedaq_version"
 setup_dbt "$dunedaq_version"
+echo done
 if [[ "$version" =~ ^N2 ]]; then
     # Nightly
-    echo dbt-create.sh --clone-pyvenv --nightly "$version" "$workdir"
-    dbt-create.sh --clone-pyvenv --nightly "$version" "$workdir"
+    echo dbt-create.py --clone-pyvenv --nightly "$version" "$workdir"
+    dbt-create.py --clone-pyvenv --nightly "$version" "$workdir"
 else
     # Not nightly
-    echo dbt-create.sh --clone-pyvenv "$version" "$workdir"
-    dbt-create.sh --clone-pyvenv "$version" "$workdir"
+    echo dbt-create.py --clone-pyvenv "$version" "$workdir"
+    dbt-create.py --clone-pyvenv "$version" "$workdir"
 fi
 
 cat <<EOF > "$workdir/.dir-locals.el"
